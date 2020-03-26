@@ -10,17 +10,31 @@ def FrequencyMap(Text, k):
         else:
             frequency[Pattern] += 1
     return frequency
-   
 
-def FrequentWords(Text, k):
+# ( ^ the well known occurences hashmap problem )
+
+def FrequentPatterns(Text, k):
     most_frequent_patterns = []
     frequency = FrequencyMap(Text, k)
     maximum_frequency = max(frequency.values())
+    print("How frequent is max? " + str(maximum_frequency))
     for pattern in frequency:
         if frequency[pattern] == maximum_frequency:
             most_frequent_patterns.append(pattern)
     return most_frequent_patterns
 
+""" Vibrio Cholerae oriC """
 
-print(FrequencyMap("ACGTTGCATGTCGCATGATGCATGAGAGCT", 4))
-print(FrequentWords("ACGTTGCATGTCGCATGATGCATGAGAGCT", 4))
+vibrio_cholerae = "ATCAATGATCAACGTAAGCTTCTAAGCATGATCAAGGTGCTCA"\
+"CACAGTTTATCCACAACCTGAGTGGATGACATCAAGATAGGTCGTTGTATCTCC"\
+"TTCCTCTCGTACTCTCATGACCACGGAAAGATGATCAAGAGAGGATGATTTCTTGG"\
+"CCATATCGCAATGAATACTTGTGACTTGTGCTTCCAATTGACATCTTCAGCGCCATAT"\
+"TGCGCTGGCCAAGGTGACGGAGCGGGATTACGAAAGCATGATCATGGCTGTTGTTCTGTT"\
+"TATCTTGTTTTGACTGAGACTTGTTAGGATAGACGGTTTTTCATCACTGACTAGCCAAAGC"\
+"CTTACTCTGCCTGACATCGACCGTAAATTGATAATGAATTTACATGCTTCCGCGACGATTTAC"\
+"CTCTTGATCATCGATCCGATTGAAGATCTTCAATTGTTAATTCTCTTGCCTCGACTCATAGCCA"\
+"TGATGAGCTCTTGATCATGTTTCCTTAACCCTCTATTTTTTACGGAAGAATGATCAAGCTGCTGCTCTTGATCATCGTTTC"
+
+
+print(FrequentPatterns(vibrio_cholerae, 9)) # => ['ATGATCAAG', 'CTCTTGATC', 'TCTTGATCA', 'CTTGATCAT']
+""" Note the first 2 are complementary strands """
