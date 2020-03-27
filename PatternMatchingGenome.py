@@ -43,5 +43,7 @@ CTTGATCAT
 ||||||||
 GAACTAGTA
 
-An Ori usually has ~500 nucleotides. For v.cholerae the number is 540
+Facts:
+    ->  An Ori usually has ~500 nucleotides. For v.cholerae the number is 540
+    ->  9-mers have been experimentally proven to be DnaA boxes
 """
