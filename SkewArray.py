@@ -18,6 +18,9 @@ def SkewArray(Genome):
     skew = [0] # set zero position as zero on purpose
     for index in range(1, len(Genome) +  1):
         skew.append(skew[index - 1] + calculateDiff(Genome[index - 1]))
+    # skewAsDict =  { i : skew[i] for i in range(0, len(skew) ) }
+    # return skewAsDict
+    # print(skew[:])
     return skew
 
 
@@ -30,4 +33,6 @@ with open('E_coli.txt') as file:
     plt.xlabel('E.Coli genome position')
     plt.ylabel('skew (difference G - C)')
     plt.show()
+
+
 
