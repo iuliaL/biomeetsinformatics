@@ -31,6 +31,8 @@ print("Max C count:", max_occurences) # => 606875
 
 # plt.plot(*zip(*sorted(array.items()))) # don't know why sorted since this is actually a list
 plt.plot(array.values())
+plt.xlabel('Genome position')
+plt.ylabel('C count in half-genome legth window')
 plt.show()
 
 if __name__ == "__main__":
