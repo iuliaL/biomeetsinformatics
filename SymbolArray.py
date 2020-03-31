@@ -1,6 +1,9 @@
 # Find the occurences of given nucleotide "symbol" (A, T, C, G) in a window (genome substring) of length equal to half of the genome
-# the point is to compare the nucleotide occurences in the 2 halfs of the genome in order to find the oriC
-# return a dict
+# the point is to compare the nucleotide occurences in the 2 halfs of the genome in order to find the oriC.
+# The point where the C starts increasing after having decreased (see plot) might indicate the OriC
+# (remember! the Genome of Bacteria is CIRCULAR so the index = 0 does not mean the genome starts at that position 0! )
+# we have to extend the genome be a half to mimic the "circularity"
+# return an array (like an indexed dict)
 
 from PatternCount import PatternCount
 import matplotlib.pyplot as plt
@@ -26,7 +29,8 @@ array = SymbolArray(e_coli, "C")
 max_occurences = max(array.values())
 print("Max C count:", max_occurences) # => 606875
 
-plt.plot(*zip(*sorted(array.items()))) # don't know why sorted
+# plt.plot(*zip(*sorted(array.items()))) # don't know why sorted since this is actually a list
+plt.plot(array.values())
 plt.show()
 
 if __name__ == "__main__":

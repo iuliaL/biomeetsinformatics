@@ -12,13 +12,11 @@ def PatternCount(Text, Pattern):
 	return count
 	
 
-
-
 pattern = "ATA"
 text = "CGTAATATCCATAG"
 
 count = PatternCount(text, pattern)
-print("Pattern found: {}".format(count)) # => 2
+# print("Pattern found: {}".format(count)) # => 2
 
 # def PatternCountWithRegex (Text, Pattern):
 # 	return len(re.findall(Pattern, Text))
