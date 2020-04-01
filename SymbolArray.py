@@ -22,7 +22,7 @@ def SymbolArray(Genome, symbol):
         symbolArray[index] = occurences
     return symbolArray
 
-with open('E_coli.txt') as file:
+with open('E_coli_genome.txt') as file:
     e_coli = file.read()
 
 array = SymbolArray(e_coli, "C")
