@@ -20,6 +20,11 @@ def SkewArray(Genome):
         skew.append(skew[index - 1] + calculateDiff(Genome[index - 1]))
     return skew
 
+# Test
+# skew = SkewArray('CATTCCAGTACTTCGATGATGGCGTGAAGA')
+# skew_dict = { i : skew[i] for i in range(len(skew))}
+# print(skew_dict)
+
 
 if __name__ == "__main__":
     import sys

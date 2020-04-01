@@ -25,4 +25,4 @@ def ApproximatePatternMatching(Pattern, Genome, d):
     return positions
 
 # Test
-print(ApproximatePatternMatching('ATTCTGGA', 'CGCCCGAATCCAGAACGCATTCCCATATTTCGGGACCACTGGCCTCCACGGTACGGACGTCAATCAAAT', 3)) # -> [6, 7, 26, 27]
+# print(ApproximatePatternMatching('ATTCTGGA', 'CGCCCGAATCCAGAACGCATTCCCATATTTCGGGACCACTGGCCTCCACGGTACGGACGTCAATCAAAT', 3)) # -> [6, 7, 26, 27]

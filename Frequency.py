@@ -13,11 +13,13 @@ def FrequencyMap(Text, k):
 
 # ( ^ the well known occurences hashmap problem )
 
+
+# filter only the results that have maximum frequency
 def FrequentPatterns(Text, k):
     most_frequent_patterns = []
     frequency = FrequencyMap(Text, k)
-    at_least_3_times = getFrequent(frequency, 3)
-    print(at_least_3_times)
+    # at_least_3_times = getFrequent(frequency, 3)
+    # print(at_least_3_times)
     maximum_frequency = max(frequency.values())
     print("How frequent is max? " + str(maximum_frequency))
 
@@ -26,6 +28,7 @@ def FrequentPatterns(Text, k):
             most_frequent_patterns.append(pattern)
     return most_frequent_patterns
 
+# filter only the results appearing more often than threshold
 def getFrequent(frequencies, threshold):
     frequent = {}
     for key in frequencies:
@@ -47,17 +50,18 @@ CTCTTGATCATCGATCCGATTGAAGATCTTCAATTGTTAATTCTCTTGCCTCGACTCATAGCCA
 TGATGAGCTCTTGATCATGTTTCCTTAACCCTCTATTTTTTACGGAAGAATGATCAAGCTGCTGCTCTTGATCATCGTTTC
 
 """
+if __name__ == "__main__":
 
-vibrio_cholerae_oriC_file = open(r"vibrio_cholerae_oriC.txt")
-vibrio_cholerae_oriC = vibrio_cholerae_oriC_file.read()
-vibrio_cholerae_oriC_file.close()
-
-
-# print(FrequentPatterns(vibrio_cholerae_oriC, 9)) # => ['ATGATCAAG', 'CTCTTGATC', 'TCTTGATCA', 'CTTGATCAT']
-""" Note the first 2 are complementary strands """
+    vibrio_cholerae_oriC_file = open(r"vibrio_cholerae_oriC.txt")
+    vibrio_cholerae_oriC = vibrio_cholerae_oriC_file.read()
+    vibrio_cholerae_oriC_file.close()
 
 
-t_petrophila_oriC_file = open(r"t_petrophila_oriC.txt")
-t_petrophila_oriC = t_petrophila_oriC_file.read()
-t_petrophila_oriC_file.close()
-print(FrequentPatterns(t_petrophila_oriC, 9))
+    # print(FrequentPatterns(vibrio_cholerae_oriC, 9)) # => ['ATGATCAAG', 'CTCTTGATC', 'TCTTGATCA', 'CTTGATCAT']
+    """ Note the first 2 are complementary strands """
+
+
+    t_petrophila_oriC_file = open(r"t_petrophila_oriC.txt")
+    t_petrophila_oriC = t_petrophila_oriC_file.read()
+    t_petrophila_oriC_file.close()
+    print(FrequentPatterns(t_petrophila_oriC, 9))
