@@ -5,6 +5,7 @@
 # Output: All starting positions where Pattern appears as a substring of Text with at most d mismatches. (A list of positions)
 
 # Make sure to use HammingDistance as a subroutine!
+
 from HammingDistance import HammingDistance
 
 
@@ -13,7 +14,7 @@ def ApproximatePatternMatching(Pattern, Genome, d):
     k = len(Pattern)
     for index in range(len(Genome) + k - 1):
         curr_kmer = Genome[index : index + k]
-        if not len(curr_kmer) == k:
+        if not len(curr_kmer) == k: # Hamming Distance assumes 2 equal length strings
             continue
         if curr_kmer == Pattern:
             positions.append(index)
