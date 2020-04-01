@@ -22,23 +22,22 @@ def SymbolArray(Genome, symbol):
         symbolArray[index] = occurences
     return symbolArray
 
-with open('E_coli_genome.txt') as file:
-    e_coli = file.read()
-
-array = SymbolArray(e_coli, "C")
-max_occurences = max(array.values())
-print("Max C count:", max_occurences) # => 606875
-
-# plt.plot(*zip(*sorted(array.items()))) # don't know why sorted since this is actually a list
-plt.plot(array.values())
-plt.xlabel('Genome position')
-plt.ylabel('C count in half-genome legth window')
-plt.show()
-
 if __name__ == "__main__":
     import sys
+    if len(sys.argv[1:]) != 2:
+        print("You must pass a genome string argument and a nucleotide as second argument")
+        exit()
 
-    with open(sys.argv[1],'r') as f:
-        genome = f.read()
+    f = open(sys.argv[1],'r')
+    genome = f.read()
+    f.close()
     symbol =  sys.argv[2]
     SymbolArray(genome, symbol)
+    array = SymbolArray(genome, "C")
+    # max_occurences = max(array.values())
+    # print("Max C count:", max_occurences) # => 606875
+    plt.plot(array.values())
+    plt.xlabel('Genome position')
+    plt.ylabel('C count in half-genome legth window')
+    plt.show()
+    # plt.plot(*zip(*sorted(array.items()))) # don't know why sorted since this is actually a list

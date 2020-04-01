@@ -18,21 +18,22 @@ def SkewArray(Genome):
     skew = [0] # set zero position as zero on purpose
     for index in range(1, len(Genome) +  1):
         skew.append(skew[index - 1] + calculateDiff(Genome[index - 1]))
-    # skewAsDict =  { i : skew[i] for i in range(0, len(skew) ) }
-    # return skewAsDict
-    # print(skew[:])
     return skew
 
 
-with open('E_coli_genome.txt') as file:
-    e_coli = file.read()
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv[1:]) != 1:
+        print("You must pass a genome string argument")
+        exit()
+    with open(sys.argv[1],'r') as file:
+        genome = file.read()
 
-    skew_E_Coli = SkewArray(e_coli)
-
-    plt.plot(skew_E_Coli)
-    plt.xlabel('E.Coli genome position')
-    plt.ylabel('skew (difference G - C)')
-    plt.show()
+        skew = SkewArray(genome)
+        plt.plot(skew)
+        plt.xlabel('Genome position')
+        plt.ylabel('skew (difference G - C)')
+        plt.show()
 
 
 
