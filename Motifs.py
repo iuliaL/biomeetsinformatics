@@ -1,32 +1,49 @@
 from HammingDistance import HammingDistance
 
 
-def CountMatrix(Motifs):
+def Count(Motifs):
     count = {}
     k = len(Motifs[0])
     for key in "ACGT":
-        count[key] = [0] * k # create a matrix of 4 rows by k length filled with zeros
+        count[key] = [0] * k  # create a matrix of 4 rows by k length filled with zeros
     for motif in Motifs:
         for index in range(k):
             count[motif[index]][index] += 1
     return count
 
-# print("Count Matrix", CountMatrix(['AACGTA','CCCGTT', 'CACCTT', 'GGATTA','TTCCGG']))
+# print("Count Matrix", Count(['AACGTA','CCCGTT', 'CACCTT', 'GGATTA','TTCCGG']))
 
 
 def Profile(Motifs):  # this is just like a percentage
-    count = CountMatrix(Motifs)
+    count = Count(Motifs)
     for nucleotide_key in count:
-        count[nucleotide_key] = [
-            x / len(Motifs) for x in count[nucleotide_key]]
+        count[nucleotide_key] = [x / len(Motifs) for x in count[nucleotide_key]]
     return count
 
-# print("Profile Matrix", Profile(['AACGTA', 'CCCGTT', 'CACCTT', 'GGATTA', 'TTCCGG']))
+
+def CountWithPseudocounts(Motifs):
+    count = {}
+    k = len(Motifs[0])
+    pseudocount = 1  # this adds 1 for each nucleotide count in order to avoid computing zero probabilities later
+    for key in "ACGT":
+        count[key] = [pseudocount] * k  # create a matrix of 4 rows by k length filled with 1
+    for motif in Motifs:
+        for index in range(k):
+            count[motif[index]][index] += 1
+    return count
+
+
+def ProfileWithPseudocounts(Motifs):  # this is just like a percentage
+    count = CountWithPseudocounts(Motifs)
+    pseudocounts = 1 * 4  # (4 because it's 1 for each nucleotide)
+    for nucleotide_key in count:
+        count[nucleotide_key] = [x / (len(Motifs) + pseudocounts) for x in count[nucleotide_key]]
+    return count
 
 
 def Consensus(Motifs):
     consensus = ''
-    count = CountMatrix(Motifs)
+    count = Count(Motifs)
     k = len(Motifs[0])
     for index in range(k):
         max_so_far = 0
@@ -41,9 +58,9 @@ def Consensus(Motifs):
 # print("Consensus", Consensus(['AACGTA','CCCGTT', 'CACCTT', 'GGATTA','TTCCGG'])) # => CACCTA
 
 
-def Score_(Motifs):
+def Score_(Motifs):  # column by column distance to consensus
     consensus = Consensus(Motifs)
-    count = CountMatrix(Motifs)
+    count = Count(Motifs)
     k = len(Motifs[0])
     t = len(Motifs)
     score = 0
@@ -57,7 +74,7 @@ def Score_(Motifs):
     return score
 
 
-def Score(Motifs):
+def Score(Motifs):  # row by row distance to consensus
     score = 0
     consensus = Consensus(Motifs)
     for motif in Motifs:
@@ -85,7 +102,7 @@ profile = {
 # print("Probability", Pr("TCGTGGATTTCC", profile))
 
 
-def ProfileMostProbableKmer(text, k, profile):
+def ProfileMostProbableKmer(text, k, profile):  # but here i could get more than 1, i ignore ties
     most_probable = None
     initial_probability = -1  # impossible one
     for i in range((len(text) - k + 1)):
@@ -120,7 +137,7 @@ def GreedyMotifSearch(Dna, k, t):
         kmer_in1st_string = Dna[0][i: i + k]
         Motifs.append(kmer_in1st_string)
         for index in range(1, t):
-            profile_matrix = Profile(Motifs)
+            profile_matrix = ProfileWithPseudocounts(Motifs)
             most_similar = ProfileMostProbableKmer(Dna[index], k, profile_matrix)
             Motifs.append(most_similar)
         if Score(Motifs) < Score(BestMotifs):
@@ -129,11 +146,20 @@ def GreedyMotifSearch(Dna, k, t):
 
 
 Dna = [
+    "TTACCTTAAC",
+    "GATGTCTGTC",
+    "ACGGCGTTAG",
+    "CCCTAACGAG",
+    "CGTCAGAGGT"]
+
+print("Greedy motif search", GreedyMotifSearch(Dna, 4, 5)) # => ['ACCT', 'ATGT', 'ACGG', 'ACGA', 'AGGT']
+
+
+Dna_ = [
     "GGCGTTCAGGCA",
     "AAGAATCAGTCA",
     "CAAGGAGTTCGC",
     "CACGTCAATCAC",
     "CAATAATATTCG"
 ]
-
-# print("Greedy motif search", GreedyMotifSearch(Dna, 3, 5))  # => ['CAG', 'CAG', 'CAA', 'CAA', 'CAA']
+# print("Greedy motif search", GreedyMotifSearch(Dna_, 3, 5))  # => ['CAG', 'CAG', 'CAA', 'CAA', 'CAA']
