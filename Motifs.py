@@ -1,4 +1,5 @@
 from HammingDistance import HammingDistance
+from random import randint
 
 
 def Count(Motifs):
@@ -43,7 +44,7 @@ def ProfileWithPseudocounts(Motifs):  # this is just like a percentage
 
 def Consensus(Motifs):
     consensus = ''
-    count = Count(Motifs)
+    count = CountWithPseudocounts(Motifs)
     k = len(Motifs[0])
     for index in range(k):
         max_so_far = 0
@@ -58,9 +59,9 @@ def Consensus(Motifs):
 # print("Consensus", Consensus(['AACGTA','CCCGTT', 'CACCTT', 'GGATTA','TTCCGG'])) # => CACCTA
 
 
-def Score_(Motifs):  # column by column distance to consensus
+def Score(Motifs):  # column by column distance to consensus
     consensus = Consensus(Motifs)
-    count = Count(Motifs)
+    count = CountWithPseudocounts(Motifs)
     k = len(Motifs[0])
     t = len(Motifs)
     score = 0
@@ -74,7 +75,7 @@ def Score_(Motifs):  # column by column distance to consensus
     return score
 
 
-def Score(Motifs):  # row by row distance to consensus
+def Score_(Motifs):  # row by row distance to consensus
     score = 0
     consensus = Consensus(Motifs)
     for motif in Motifs:
@@ -84,6 +85,8 @@ def Score(Motifs):  # row by row distance to consensus
 # print(Score(['AACGTA','CCCGTT', 'CACCTT', 'GGATTA','TTCCGG']))
 
 # Probability
+
+
 def Pr(Pattern, Profile):
     pr = 1
     for index in range(len(Pattern)):
@@ -92,12 +95,12 @@ def Pr(Pattern, Profile):
     return pr
 
 
-profile = {
-    'A': [0.2, 0.2, 0.0, 0.0, 0.0, 0.0, 0.9, 0.1, 0.1, 0.1, 0.3, 0.0],
-    'C': [0.1, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.1, 0.2, 0.4, 0.6],
-    'G': [0.0, 0.0, 1.0, 1.0, 0.9, 0.9, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],
-    'T': [0.7, 0.2, 0.0, 0.0, 0.1, 0.1, 0.0, 0.5, 0.8, 0.7, 0.3, 0.4]
-}
+# profile = {
+#     'A': [0.2, 0.2, 0.0, 0.0, 0.0, 0.0, 0.9, 0.1, 0.1, 0.1, 0.3, 0.0],
+#     'C': [0.1, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.1, 0.2, 0.4, 0.6],
+#     'G': [0.0, 0.0, 1.0, 1.0, 0.9, 0.9, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],
+#     'T': [0.7, 0.2, 0.0, 0.0, 0.1, 0.1, 0.0, 0.5, 0.8, 0.7, 0.3, 0.4]
+# }
 
 # print("Probability", Pr("TCGTGGATTTCC", profile))
 
@@ -114,12 +117,12 @@ def ProfileMostProbableKmer(text, k, profile):  # but here i could get more than
     return most_probable
 
 
-profile__ = {
-    'A': [0.2, 0.2, 0.3, 0.2, 0.3],
-    'C': [0.4, 0.3, 0.1, 0.5, 0.1],
-    'G': [0.3, 0.3, 0.5, 0.2, 0.4],
-    'T': [0.1, 0.2, 0.1, 0.1, 0.2]
-}
+# profile__ = {
+#     'A': [0.2, 0.2, 0.3, 0.2, 0.3],
+#     'C': [0.4, 0.3, 0.1, 0.5, 0.1],
+#     'G': [0.3, 0.3, 0.5, 0.2, 0.4],
+#     'T': [0.1, 0.2, 0.1, 0.1, 0.2]
+# }
 
 # print("Most probable by profile", ProfileMostProbableKmer("ACCTGTTTATTGCCTAAGTTCCGAACAAACCCAATATAGCCCGAGGGCCT", 5, profile__))    # => CCGAG
 
@@ -127,7 +130,7 @@ profile__ = {
 # http://www.mrgraeme.co.uk/greedy-motif-search/
 # Amazing explanation
 
-def GreedyMotifSearch(Dna, k, t):
+def GreedyMotifSearch(Dna, k, t):  # Dna is a list of t strings (dont know why i have t since it's len(Dna))
     BestMotifs = []
     for i in range(0, t):
         BestMotifs.append(Dna[i][0:k])
@@ -145,21 +148,77 @@ def GreedyMotifSearch(Dna, k, t):
     return BestMotifs
 
 
-Dna = [
-    "TTACCTTAAC",
-    "GATGTCTGTC",
-    "ACGGCGTTAG",
-    "CCCTAACGAG",
-    "CGTCAGAGGT"]
+# Dna = [
+#     "TTACCTTAAC",
+#     "GATGTCTGTC",
+#     "ACGGCGTTAG",
+#     "CCCTAACGAG",
+#     "CGTCAGAGGT"]
 
-print("Greedy motif search", GreedyMotifSearch(Dna, 4, 5)) # => ['ACCT', 'ATGT', 'ACGG', 'ACGA', 'AGGT']
+# print("Greedy motif search", GreedyMotifSearch(Dna, 4, 5))  # => ['ACCT', 'ATGT', 'ACGG', 'ACGA', 'AGGT']
 
-
-Dna_ = [
-    "GGCGTTCAGGCA",
-    "AAGAATCAGTCA",
-    "CAAGGAGTTCGC",
-    "CACGTCAATCAC",
-    "CAATAATATTCG"
-]
+# Dna_ = [
+#     "GGCGTTCAGGCA",
+#     "AAGAATCAGTCA",
+#     "CAAGGAGTTCGC",
+#     "CACGTCAATCAC",
+#     "CAATAATATTCG"
+# ]
 # print("Greedy motif search", GreedyMotifSearch(Dna_, 3, 5))  # => ['CAG', 'CAG', 'CAA', 'CAA', 'CAA']
+
+
+def Motifs(Profile, k, Dna):
+    result = []
+    for string in Dna:
+        most_probable = ProfileMostProbableKmer(string, k, Profile)
+        result.append(most_probable)
+    return result
+
+
+def RandomMotifs(Dna, k, t):
+    random_motifs = []
+    for s in Dna:
+        start_pos = randint(0, len(Dna) - 1)
+        random_motifs.append(s[start_pos: start_pos + k])
+    return random_motifs
+
+
+def RandomizedMotifSearch(Dna, k, t):
+    BestMotifs = RandomMotifs(Dna, k, t)
+    while True:
+        profile = ProfileWithPseudocounts(BestMotifs)
+        new_motifs = Motifs(profile, k, Dna)
+        if Score(new_motifs) < Score(BestMotifs):
+            BestMotifs = new_motifs
+        else:
+            return BestMotifs
+
+
+Dna = ["GCGCCCCGCCCGGACAGCCATGCGCTAACCCTGGCTTCGATGGCGCCGGCTCAGTTAGGGCCGGAAGTCCCCAATGTGGCAGACCTTTCGCCCCTGGCGGACGAATGACCCCAGTGGCCGGGACTTCAGGCCCTATCGGAGGGCTCCGGCGCGGTGGTCGGATTTGTCTGTGGAGGTTACACCCCAATCGCAAGGATGCATTATGACCAGCGAGCTGAGCCTGGTCGCCACTGGAAAGGGGAGCAACATC",
+"CCGATCGGCATCACTATCGGTCCTGCGGCCGCCCATAGCGCTATATCCGGCTGGTGAAATCAATTGACAACCTTCGACTTTGAGGTGGCCTACGGCGAGGACAAGCCAGGCAAGCCAGCTGCCTCAACGCGCGCCAGTACGGGTCCATCGACCCGCGGCCCACGGGTCAAACGACCCTAGTGTTCGCTACGACGTGGTCGTACCTTCGGCAGCAGATCAGCAATAGCACCCCGACTCGAGGAGGATCCCG",
+"ACCGTCGATGTGCCCGGTCGCGCCGCGTCCACCTCGGTCATCGACCCCACGATGAGGACGCCATCGGCCGCGACCAAGCCCCGTGAAACTCTGACGGCGTGCTGGCCGGGCTGCGGCACCTGATCACCTTAGGGCACTTGGGCCACCACAACGGGCCGCCGGTCTCGACAGTGGCCACCACCACACAGGTGACTTCCGGCGGGACGTAAGTCCCTAACGCGTCGTTCCGCACGCGGTTAGCTTTGCTGCC",
+"GGGTCAGGTATATTTATCGCACACTTGGGCACATGACACACAAGCGCCAGAATCCCGGACCGAACCGAGCACCGTGGGTGGGCAGCCTCCATACAGCGATGACCTGATCGATCATCGGCCAGGGCGCCGGGCTTCCAACCGTGGCCGTCTCAGTACCCAGCCTCATTGACCCTTCGACGCATCCACTGCGCGTAAGTCGGCTCAACCCTTTCAAACCGCTGGATTACCGACCGCAGAAAGGGGGCAGGAC",
+"GTAGGTCAAACCGGGTGTACATACCCGCTCAATCGCCCAGCACTTCGGGCAGATCACCGGGTTTCCCCGGTATCACCAATACTGCCACCAAACACAGCAGGCGGGAAGGGGCGAAAGTCCCTTATCCGACAATAAAACTTCGCTTGTTCGACGCCCGGTTCACCCGATATGCACGGCGCCCAGCCATTCGTGACCGACGTCCCCAGCCCCAAGGCCGAACGACCCTAGGAGCCACGAGCAATTCACAGCG",
+"CCGCTGGCGACGCTGTTCGCCGGCAGCGTGCGTGACGACTTCGAGCTGCCCGACTACACCTGGTGACCACCGCCGACGGGCACCTCTCCGCCAGGTAGGCACGGTTTGTCGCCGGCAATGTGACCTTTGGGCGCGGTCTTGAGGACCTTCGGCCCCACCCACGAGGCCGCCGCCGGCCGATCGTATGACGTGCAATGTACGCCATAGGGTGCGTGTTACGGCGATTACCTGAAGGCGGCGGTGGTCCGGA",
+"GGCCAACTGCACCGCGCTCTTGATGACATCGGTGGTCACCATGGTGTCCGGCATGATCAACCTCCGCTGTTCGATATCACCCCGATCTTTCTGAACGGCGGTTGGCAGACAACAGGGTCAATGGTCCCCAAGTGGATCACCGACGGGCGCGGACAAATGGCCCGCGCTTCGGGGACTTCTGTCCCTAGCCCTGGCCACGATGGGCTGGTCGGATCAAAGGCATCCGTTTCCATCGATTAGGAGGCATCAA",
+"GTACATGTCCAGAGCGAGCCTCAGCTTCTGCGCAGCGACGGAAACTGCCACACTCAAAGCCTACTGGGCGCACGTGTGGCAACGAGTCGATCCACACGAAATGCCGCCGTTGGGCCGCGGACTAGCCGAATTTTCCGGGTGGTGACACAGCCCACATTTGGCATGGGACTTTCGGCCCTGTCCGCGTCCGTGTCGGCCAGACAAGCTTTGGGCATTGGCCACAATCGGGCCACAATCGAAAGCCGAGCAG",
+"GGCAGCTGTCGGCAACTGTAAGCCATTTCTGGGACTTTGCTGTGAAAAGCTGGGCGATGGTTGTGGACCTGGACGAGCCACCCGTGCGATAGGTGAGATTCATTCTCGCCCTGACGGGTTGCGTCTGTCATCGGTCGATAAGGACTAACGGCCCTCAGGTGGGGACCAACGCCCCTGGGAGATAGCGGTCCCCGCCAGTAACGTACCGCTGAACCGACGGGATGTATCCGCCCCAGCGAAGGAGACGGCG",
+"TCAGCACCATGACCGCCTGGCCACCAATCGCCCGTAACAAGCGGGACGTCCGCGACGACGCGTGCGCTAGCGCCGTGGCGGTGACAACGACCAGATATGGTCCGAGCACGCGGGCGAACCTCGTGTTCTGGCCTCGGCCAGTTGTGTAGAGCTCATCGCTGTCATCGAGCGATATCCGACCACTGATCCAAGTCGGGGGCTCTGGGGACCGAAGTCCCCGGGCTCGGAGCTATCGGACCTCACGATCACC"]
+
+# set t equal to the number of strings in Dna, k equal to 15, and N equal to 100.
+t = len(Dna)
+k = 15
+N = 100
+
+# Call RandomizedMotifSearch(Dna, k, t) N times, storing the best-scoring set of motifs
+# resulting from this algorithm in a variable called BestMotifs
+i = 0
+BestMotifs = RandomizedMotifSearch(Dna, k, t)
+while i < N:
+    motifs = RandomizedMotifSearch(Dna, k, t)
+    if Score(BestMotifs) > Score(motifs):
+        BestMotifs = motifs
+    i+=1
+
+print(BestMotifs)
+print(Score(BestMotifs))
