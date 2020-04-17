@@ -3,7 +3,7 @@
 
 def FrequencyMap(Text, k):
     frequency = {}
-    for index in range(len(Text) - k + 1):
+    for index in range(len(Text) - k + 1): # exp: "ATCCGA" in 6 length text i have 4 3-length kmers 6 - 3 + 1 = 4; range 0 -> 4 means 4 times
         Pattern = Text[index: index + k]
         # print("k-mer is " + Pattern)
         if Pattern not in frequency:
