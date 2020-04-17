@@ -1,6 +1,7 @@
 from HammingDistance import HammingDistance
-from random import randint
+from random import randint, uniform, random
 from Frequency import FrequencyMap
+
 
 def Count(Motifs):
     count = {}
@@ -124,7 +125,8 @@ def ProfileMostProbableKmer(text, k, profile):  # but here i could get more than
 #     'T': [0.1, 0.2, 0.1, 0.1, 0.2]
 # }
 
-# print("Most probable by profile", ProfileMostProbableKmer("ACCTGTTTATTGCCTAAGTTCCGAACAAACCCAATATAGCCCGAGGGCCT", 5, profile__))    # => CCGAG
+# print("Most probable 5mer in sequence given a profile", ProfileMostProbableKmer("ACCTGTTTATTGCCTAAGTTCCGAACAAACCCAATATAGCCCGAGGGCCT", 5, profile__))
+# => CCGAG
 
 
 # http://www.mrgraeme.co.uk/greedy-motif-search/
@@ -158,18 +160,17 @@ def GreedyMotifSearch(Dna, k, t):  # Dna is a list of t strings (dont know why i
 # print("Greedy motif search", GreedyMotifSearch(Dna, 4, 5))  # => ['ACCT', 'ATGT', 'ACGG', 'ACGA', 'AGGT']
 
 
-
 # Find the most probable kmer(motif) in each DNA string given the Profile
 # Output the Motifs
 def Motifs(Profile, k, Dna):
-    result = []
+    motifs = []
     for string in Dna:
         most_probable = ProfileMostProbableKmer(string, k, Profile)
-        result.append(most_probable)
-    return result
+        motifs.append(most_probable)
+    return motifs
 
 
-def RandomMotifs(Dna, k, t): # just pick 1 random k mer from each DNA string
+def RandomMotifs(Dna, k, t):  # just pick 1 random k mer from each DNA string
     random_motifs = []
     for s in Dna:
         start_pos = randint(0, len(Dna) - 1)
@@ -180,8 +181,9 @@ def RandomMotifs(Dna, k, t): # just pick 1 random k mer from each DNA string
 def RandomizedMotifSearch(Dna, k, t):
     BestMotifs = RandomMotifs(Dna, k, t)
     while True:
-         # create a profile for the random motifs I start with and then use it to find better motifs and so on
+        # create a profile for the random motifs I start with and then use it to find better motifs and so on
         profile = ProfileWithPseudocounts(BestMotifs)
+        # which runs a ProfileMostProbableKmer on EACH of the Dna strings, thus can change all motifs found before, good/bad
         new_motifs = Motifs(profile, k, Dna)
         if Score(new_motifs) < Score(BestMotifs):
             BestMotifs = new_motifs
@@ -202,19 +204,20 @@ N = 100
 
 times = []
 
-def RunNTimes(N):
+
+def RunNTimesRandomizedMotifSearch(N):
     i = 0
     BestMotifs = RandomizedMotifSearch(Dna, k, t)
     while i < N:
         motifs = RandomizedMotifSearch(Dna, k, t)
         if Score(BestMotifs) > Score(motifs):
             BestMotifs = motifs
-        i+=1
+        i += 1
     consensus = Consensus(BestMotifs)
     times.append(consensus)
-    
 
-def Frequency(patterns):  
+
+def Frequency(patterns):
     frequency = {}
     for Pattern in patterns:
         if Pattern not in frequency:
@@ -223,11 +226,96 @@ def Frequency(patterns):
             frequency[Pattern] += 1
     return frequency
 
-i_ = 0 
-while i_ < N:
-    RunNTimes(N)
-    i_+=1
 
-print(Frequency(times))
+# i = 0
+# while i < N:
+#     RunNTimesRandomizedMotifSearch(N)
+#     i += 1
+
 # implanted motif (consensus) was ACGT indeed
 # => {'ACGT': 83, 'TCAG': 3, 'GTTA': 2, 'CGTC': 3, 'GACG': 1, 'CCTT': 5, 'CTTA': 1, 'GCCT': 1, 'TTAG': 1}
+
+
+# Input: A dictionary Probabilities, where keys are k-mers and values are the probabilities of these k-mers (which do not necessarily sum up to 1)
+# Output: A normalized dictionary where the probability of each k-mer was divided by the sum of all k-mers' probabilities
+
+def Normalize(Probabilities):
+    total = sum(Probabilities.values())
+    new_probabilities = {}
+    for k in Probabilities:
+        new_probabilities[k] = Probabilities[k] / float(total)
+    return new_probabilities
+
+
+# print(Normalize({'A': 0.1, 'C': 0.1, 'G': 0.1, 'T': 0.1}))
+
+def WeightedDie(Probabilities):
+    n = uniform(0, 1)
+    for p in Probabilities:
+        n -= Probabilities[p]
+        if n <= 0:
+            return p
+
+# print(WeightedDie({'AA': 0.3, 'AC': 0.2, 'TT': 0.45, 'CG': 0.05}))
+
+
+def ProfileGeneratedString(Text, profile, k):
+    # Differs from ProfileMostProbableKmer because it is not necessarily picking the most probable kmer
+    # (it has a degree of randomness given by the biased WeightDie, it is biased to the implanted motif) although there is a big chance to pick it.
+    # This is intentional! It avoids finding a local motif that only looks like being the implanted one
+    n = len(Text)
+    probabilities = {}
+    for index in range(n - k + 1):
+        kmer = Text[index: index + k]
+        probabilities[kmer] = Pr(kmer, profile)
+    return WeightedDie(Normalize(probabilities))
+
+# print(ProfileGeneratedString('AAACCCAAACCC', {'A': [0.5, 0.1], 'C': [0.3, 0.2], 'G': [0.2, 0.4], 'T': [0.0, 0.3]}, 2))
+
+
+def GibbsSampler(Dna, k, t, N):
+    # first, randomly select a k-mer motif from each string in Dna
+    BestMotifs = RandomMotifs(Dna, k, t)
+    # start loop
+    for _ in range(N):
+        # then pick one string to delete
+        i = randint(1, t) - 1
+        deleted_string = Dna[i]
+        # then create a profile on the remaining ones
+        profile_of_rest = ProfileWithPseudocounts(BestMotifs[:i] + BestMotifs[i + 1:])
+        # then extract a motif back from the deleted string plus the profile by using WeightDie randomness
+        new_motif = ProfileGeneratedString(deleted_string, profile_of_rest, k)
+        # recreate the motifs list with the new motif in (the same) place
+        renewed_motifs = BestMotifs[:i] + [new_motif] + BestMotifs[i + 1:]
+        if Score(BestMotifs) > Score(renewed_motifs):
+            # calculate the score and if better than the old ones store the new motifs as best
+            BestMotifs = renewed_motifs
+    # repeat N times
+    # end loop
+    return BestMotifs
+
+
+Dna = ["GCGCCCCGCCCGGACAGCCATGCGCTAACCCTGGCTTCGATGGCGCCGGCTCAGTTAGGGCCGGAAGTCCCCAATGTGGCAGACCTTTCGCCCCTGGCGGACGAATGACCCCAGTGGCCGGGACTTCAGGCCCTATCGGAGGGCTCCGGCGCGGTGGTCGGATTTGTCTGTGGAGGTTACACCCCAATCGCAAGGATGCATTATGACCAGCGAGCTGAGCCTGGTCGCCACTGGAAAGGGGAGCAACATC",
+       "CCGATCGGCATCACTATCGGTCCTGCGGCCGCCCATAGCGCTATATCCGGCTGGTGAAATCAATTGACAACCTTCGACTTTGAGGTGGCCTACGGCGAGGACAAGCCAGGCAAGCCAGCTGCCTCAACGCGCGCCAGTACGGGTCCATCGACCCGCGGCCCACGGGTCAAACGACCCTAGTGTTCGCTACGACGTGGTCGTACCTTCGGCAGCAGATCAGCAATAGCACCCCGACTCGAGGAGGATCCCG",
+       "ACCGTCGATGTGCCCGGTCGCGCCGCGTCCACCTCGGTCATCGACCCCACGATGAGGACGCCATCGGCCGCGACCAAGCCCCGTGAAACTCTGACGGCGTGCTGGCCGGGCTGCGGCACCTGATCACCTTAGGGCACTTGGGCCACCACAACGGGCCGCCGGTCTCGACAGTGGCCACCACCACACAGGTGACTTCCGGCGGGACGTAAGTCCCTAACGCGTCGTTCCGCACGCGGTTAGCTTTGCTGCC",
+       "GGGTCAGGTATATTTATCGCACACTTGGGCACATGACACACAAGCGCCAGAATCCCGGACCGAACCGAGCACCGTGGGTGGGCAGCCTCCATACAGCGATGACCTGATCGATCATCGGCCAGGGCGCCGGGCTTCCAACCGTGGCCGTCTCAGTACCCAGCCTCATTGACCCTTCGACGCATCCACTGCGCGTAAGTCGGCTCAACCCTTTCAAACCGCTGGATTACCGACCGCAGAAAGGGGGCAGGAC",
+       "GTAGGTCAAACCGGGTGTACATACCCGCTCAATCGCCCAGCACTTCGGGCAGATCACCGGGTTTCCCCGGTATCACCAATACTGCCACCAAACACAGCAGGCGGGAAGGGGCGAAAGTCCCTTATCCGACAATAAAACTTCGCTTGTTCGACGCCCGGTTCACCCGATATGCACGGCGCCCAGCCATTCGTGACCGACGTCCCCAGCCCCAAGGCCGAACGACCCTAGGAGCCACGAGCAATTCACAGCG",
+       "CCGCTGGCGACGCTGTTCGCCGGCAGCGTGCGTGACGACTTCGAGCTGCCCGACTACACCTGGTGACCACCGCCGACGGGCACCTCTCCGCCAGGTAGGCACGGTTTGTCGCCGGCAATGTGACCTTTGGGCGCGGTCTTGAGGACCTTCGGCCCCACCCACGAGGCCGCCGCCGGCCGATCGTATGACGTGCAATGTACGCCATAGGGTGCGTGTTACGGCGATTACCTGAAGGCGGCGGTGGTCCGGA",
+       "GGCCAACTGCACCGCGCTCTTGATGACATCGGTGGTCACCATGGTGTCCGGCATGATCAACCTCCGCTGTTCGATATCACCCCGATCTTTCTGAACGGCGGTTGGCAGACAACAGGGTCAATGGTCCCCAAGTGGATCACCGACGGGCGCGGACAAATGGCCCGCGCTTCGGGGACTTCTGTCCCTAGCCCTGGCCACGATGGGCTGGTCGGATCAAAGGCATCCGTTTCCATCGATTAGGAGGCATCAA",
+       "GTACATGTCCAGAGCGAGCCTCAGCTTCTGCGCAGCGACGGAAACTGCCACACTCAAAGCCTACTGGGCGCACGTGTGGCAACGAGTCGATCCACACGAAATGCCGCCGTTGGGCCGCGGACTAGCCGAATTTTCCGGGTGGTGACACAGCCCACATTTGGCATGGGACTTTCGGCCCTGTCCGCGTCCGTGTCGGCCAGACAAGCTTTGGGCATTGGCCACAATCGGGCCACAATCGAAAGCCGAGCAG",
+       "GGCAGCTGTCGGCAACTGTAAGCCATTTCTGGGACTTTGCTGTGAAAAGCTGGGCGATGGTTGTGGACCTGGACGAGCCACCCGTGCGATAGGTGAGATTCATTCTCGCCCTGACGGGTTGCGTCTGTCATCGGTCGATAAGGACTAACGGCCCTCAGGTGGGGACCAACGCCCCTGGGAGATAGCGGTCCCCGCCAGTAACGTACCGCTGAACCGACGGGATGTATCCGCCCCAGCGAAGGAGACGGCG",
+       "TCAGCACCATGACCGCCTGGCCACCAATCGCCCGTAACAAGCGGGACGTCCGCGACGACGCGTGCGCTAGCGCCGTGGCGGTGACAACGACCAGATATGGTCCGAGCACGCGGGCGAACCTCGTGTTCTGGCCTCGGCCAGTTGTGTAGAGCTCATCGCTGTCATCGAGCGATATCCGACCACTGATCCAAGTCGGGGGCTCTGGGGACCGAAGTCCCCGGGCTCGGAGCTATCGGACCTCACGATCACC"]
+# Dna = ["CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA","GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG","TAGTACCGAGACCGAAAGAAGTATACAGGCGT","TAGATCAAGTTTCAGGTGCACGTCGGTGAACC","AATCCACCAGCTCCACGTGCAATGTTGGCCTA"]
+
+i_ = 0
+N_ = 20  # times
+
+
+# BestMotifs = GibbsSampler(Dna, 15, len(Dna), 100)
+
+# while i_ < N_:
+#     motifs = GibbsSampler(Dna, 15, len(Dna), 100)
+#     # print(Score(BestMotifs), Score(motifs))
+#     if Score(BestMotifs) > Score(motifs):
+#         BestMotifs = motifs
+#     i_ += 1
