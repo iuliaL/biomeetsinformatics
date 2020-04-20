@@ -1,6 +1,4 @@
 # converter from base 10 to some other base
-
-
 def base_convert(number, base):
     result = []
     while number > 0:
@@ -11,7 +9,7 @@ def base_convert(number, base):
     return result_as_string
 
 
-print(base_convert(5437, 4))  # => 1110331
+# print(base_convert(5437, 4))  # => 1110331
 
 # since I have 4 possible nucleotides in DNA
 # we will first order all 4k k-mers lexicographically (i.e., according to how they would appear in the dictionary)
@@ -39,8 +37,16 @@ def PatternToNumber_(pattern):
         i -= 1
     return result
 
-# or easier using int(string, base)
+# print(PatternToNumber("ATGCAA")) # -> 912
 
+# How it works?
+
+# ex: PatternToNumber("ATGCAA")
+# in base 4 ATGCAA -> 032100
+
+# [0*(4^5)] + [3*(4^4)] + [2*(4^3)] + [1*(4^2)] + [0*(4^1)] + [0*(4^0)] = 0 + 768 + 128 + 16 + 0 + 0 = 912
+
+# or easier using int(string, base)
 
 def PatternToNumber(pattern):
     nucleotides = dict(A=0, C=1, G=2, T=3)
@@ -48,16 +54,8 @@ def PatternToNumber(pattern):
     as_base_4_string = "".join(
         [str(nucleotides[x]) for x in pattern]
     )
-    return int(as_base_4_string, 4)  # parses a number from string-number into the given base
+    return int(as_base_4_string, 4)  # parses a number from string-number into the provided base returns base 10
 
-
-# print(PatternToNumber("ATGCAA")) # -> 912
-
-# ex: PatternToNumber("ATGCAA")
-
-# in base 4 ATGCAA -> 032100
-
-# [0*(4^5)] + [3*(4^4)] + [2*(4^3)] + [1*(4^2)] + [0*(4^1)] + [0*(4^0)] = 0 + 768 + 128 + 16 + 0 + 0 = 912
 
 # Transform a frequency array index in a pattern
 # k is the pattern length
@@ -75,5 +73,31 @@ def NumberToPattern(number, k):
     return pattern
 
 
-print(NumberToPattern(5437, 7))  # -> CCCATTC
-print(NumberToPattern(5437, 8))  # -> ACCCATTC
+# print(NumberToPattern(5437, 7))  # -> CCCATTC
+# print(NumberToPattern(5437, 8))  # -> ACCCATTC
+
+# 4 nucleotides * k positions means 4**k possible kmers out of the 4 nucleotides
+def ComputingFrequencies(Text, k):
+    # initiate the frequency array with zeros
+    frequency_array = [0] * 4**k
+    # go through the Text sliding kmer windows till the end and store the occurences of each kmer in the frequency array
+    for index in range(len(Text) - k + 1):
+        kmer = Text[index: index + k]
+        kmer_index = PatternToNumber(kmer)  # => 644
+        frequency_array[kmer_index] += 1
+    print(frequency_array)
+    return frequency_array
+
+
+text = "ATTATTCTTAGGATGAGGCCCGTAGTGCAACGTACATCGCGGGTCAGAGCGATTCGACGTACTTCTGGTCGCGGGGGTGACGCTCCCTGCTTTAACCCGAAAGGAGATCGCGTTTCCTAGCTAAGTCATACAAGTCGGGGCCCTACTCCTCCAGACCCCTAAATCGGACTTGGTCGTCAGTAACCTTAATGCGCTCTTGAACCACTCGCACCTTCCGCATCTGCGGAAGTCCCAGTTCTCGTTGCTTAAGTGGAGGCACACTGCGTGGCCACCATGAAAAGGGTATCTGTTGGACTTTTGGGTCAATTCTATCTGCCCTCGGCACAAAAAAGGAAGTACCCCACTACACCATCGTCTGGTAGGGAACACTGATTTACTTACATAGACCTGCGTCACACTCAACATCTGCCTAAGGAAGGAATTTTGTACGAGACGGTAATTATGATGTTGCATGGCCAGCGGGGCGGGATCTTTGAACATTGTGGCAGGGCAAGGTGCCTCCTATGAGGATCTGCCATCCTTGCTAGCTAGCCGGTATTACGCGCCCGATTAATTTGTCTAAACACAGAATCTTATAAATGAAGACACCGCACTGAGACGGGGGG"
+frequency = ComputingFrequencies(text, 6)
+output = " ".join(str(x) for x in frequency)
+
+if __name__ == "__main__":
+    import subprocess
+
+    file = open('output.txt', "w")
+    file.write(output)
+    file.close()
+    # display in default GUI
+    subprocess.run(['open', 'output.txt'])

@@ -3,25 +3,21 @@
 #      Output: The reverse complement of Pattern.
 
 
-def Complement(text):
-    rule = {
-        "A": "T",
-        "C": "G",
-        "T": "A",
-        "G": "C"
-    }
-    new_strand = ""
-    for nucleotide in text:
-        new_strand += rule[nucleotide]
-    return new_strand
-
-def Reverse(text):
-    # slice with negative step goes backwards
-    return text[::-1]
-
-def ReverseComplement(text):
-    return Reverse(Complement(text))
+def ReverseComplement(Text):
+    pairs = dict(A="T", C="G", G="C", T="A")
+    complement = [
+        pairs[x] for x in Text
+    ]
+    return "".join(complement[::-1])
 
 
-print("ATGATCAAG has the complement strand " + ReverseComplement("ATGATCAAG")) # => CTTGATCAT
+output = ReverseComplement("ATGATCAAG")  # => CTTGATCAT
 
+if __name__ == "__main__":
+    import subprocess
+
+    file = open('output.txt', "w")
+    file.write(output)
+    file.close()
+    # display in default GUI
+    subprocess.run(['open', 'output.txt'])

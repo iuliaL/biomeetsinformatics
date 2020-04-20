@@ -1,5 +1,6 @@
-# k is the length of a k-mer(Pattern)
+import time
 
+# k is the length of a k-mer(Pattern)
 
 def FrequencyMap(Text, k):
     frequency = {}
@@ -17,9 +18,9 @@ def FrequencyMap(Text, k):
 
 # filter only the results that have maximum frequency
 def FrequentWords(Text, k):
+    start = time.clock()
     most_frequent_patterns = []
     frequency = FrequencyMap(Text, k)
-    print(frequency)
     # at_least_3_times = getFrequent(frequency, 3)
     # print(at_least_3_times)
     maximum_frequency = max(frequency.values())
@@ -28,6 +29,8 @@ def FrequentWords(Text, k):
     for pattern in frequency:
         if frequency[pattern] == maximum_frequency:
             most_frequent_patterns.append(pattern)
+    end = time.clock()
+    print("Elapsed time:", end - start)
     return most_frequent_patterns
 
 
