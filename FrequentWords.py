@@ -1,16 +1,13 @@
 import time
+from collections import defaultdict
 
 # k is the length of a k-mer(Pattern)
 
 def FrequencyMap(Text, k):
-    frequency = {}
+    frequency = defaultdict(lambda: 0)
     for index in range(len(Text) - k + 1): # exp: "ATCCGA" in 6 length text i have 4 3-length kmers 6 - 3 + 1 = 4; range 0 -> 4 means 4 times
         Pattern = Text[index: index + k]
-        # print("k-mer is " + Pattern)
-        if Pattern not in frequency:
-            frequency[Pattern] = 1
-        else:
-            frequency[Pattern] += 1
+        frequency[Pattern] += 1
     return frequency
 
 # ( ^ the well known occurences hashmap problem )
