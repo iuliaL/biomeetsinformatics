@@ -56,6 +56,15 @@ def PatternToNumber(pattern):
     )
     return int(as_base_4_string, 4)  # parses a number from string-number into the provided base returns base 10
 
+def RecursivePatternToNumber(pattern):
+    if len(pattern) == 0:
+        return 0
+    else:
+        nucleotides = dict(A=0, C=1, G=2, T=3)
+        return 4 * PatternToNumber(pattern[:-1]) + nucleotides[pattern[-1]]
+    
+# print(RecursivePatternToNumber("CGACCACCCTATGGCATTC")) # -> 912
+
 
 # Transform a frequency array index in a pattern
 # k is the pattern length
@@ -73,8 +82,17 @@ def NumberToPattern(number, k):
     return pattern
 
 
-# print(NumberToPattern(5437, 7))  # -> CCCATTC
-# print(NumberToPattern(5437, 8))  # -> ACCCATTC
+def RecursiveNumberToPattern(number, k):
+    nucleotides = ['A', 'C', 'G', 'T']
+    quotient = number // 4
+    remainder = number % 4
+    if k > 1:
+        return RecursiveNumberToPattern(quotient, k - 1) + nucleotides[remainder]
+    else:
+        return nucleotides[remainder]
+
+# print(NumberToPattern(6599, 11))  # -> AAAACGCTACT
+# print(RecursiveNumberToPattern(5437, 8))  # -> ACCCATTC
 
 # 4 nucleotides * k positions means 4**k possible kmers out of the 4 nucleotides
 def ComputingFrequencies(Text, k):
@@ -85,7 +103,6 @@ def ComputingFrequencies(Text, k):
         kmer = Text[index: index + k]
         kmer_index = PatternToNumber(kmer)  # => 644
         frequency_array[kmer_index] += 1
-    print(frequency_array)
     return frequency_array
 
 
@@ -100,4 +117,4 @@ if __name__ == "__main__":
     file.write(output)
     file.close()
     # display in default GUI
-    subprocess.run(['open', 'output.txt'])
+    #subprocess.run(['open', 'output.txt'])
