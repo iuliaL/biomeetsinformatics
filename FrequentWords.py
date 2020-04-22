@@ -18,8 +18,6 @@ def FrequentWords(Text, k):
     # start = time.clock()
     most_frequent_patterns = []
     frequency = FrequencyMap(Text, k)
-    # at_least_3_times = getFrequent(frequency, 3)
-    # print(at_least_3_times)
     maximum_frequency = max(frequency.values())
     # print("How frequent is max? " + str(maximum_frequency))
 
@@ -30,6 +28,7 @@ def FrequentWords(Text, k):
     # print("Elapsed time:", end - start)
     return most_frequent_patterns
 
+print(FrequentWords("CGGAGGACTCTAGGTAACGCTTATCAGGTCCATAGGACATTCA", 3))
 
 def getFrequent(frequencies, threshold):
     # filter only the results appearing more often than threshold
