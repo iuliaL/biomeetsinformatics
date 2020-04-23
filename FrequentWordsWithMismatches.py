@@ -1,6 +1,7 @@
-from AproximatePatternCount import ApproximatePatternCount
-
 # Find the most frequent kmers with at most d mismatches
+
+from AproximatePatternCount import ApproximatePatternCount
+from PermuteMotif import PermuteMotifDistanceTimes
 import itertools
 import time
 from collections import defaultdict
@@ -45,24 +46,6 @@ def FasterFrequentWordsWithMismatches(Genome, k, d):
     print("Time:", end - start)
     return aprox_frq_words
 
-
-def PermuteMotifOnce(motif, alphabet={"A", "C", "G", "T"}):
-    """
-    Gets all strings within hamming distance 1 of motif and returns it as a
-    list.
-    """
-
-    return list(set(itertools.chain.from_iterable([[
-        motif[:pos] + nucleotide + motif[pos + 1:] for
-        nucleotide in alphabet] for
-        pos in range(len(motif))])))
-
-
-def PermuteMotifDistanceTimes(motif, d):
-    workingSet = {motif}
-    for _ in range(d):
-        workingSet = set(itertools.chain.from_iterable(map(PermuteMotifOnce, workingSet)))
-    return list(workingSet)
 
 
 
