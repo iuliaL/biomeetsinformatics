@@ -1,7 +1,7 @@
 # Find the most frequent kmers with at most d mismatches
 
 from AproximatePatternCount import ApproximatePatternCount
-from PermuteMotif import PermuteMotifDistanceTimes
+from Neighbors import Neighbors
 import itertools
 import time
 from collections import defaultdict
@@ -35,8 +35,9 @@ def FasterFrequentWordsWithMismatches(Genome, k, d):
     frequencies = defaultdict(lambda: 0)
     # all existent kmers with d mismatches of current kmer in genome
     for index in range(len(Genome) - k + 1):
-        curr_kmer_and_neighbors = PermuteMotifDistanceTimes(Genome[index : index + k], d)
-        for kmer in curr_kmer_and_neighbors:
+        curr_kmer = Genome[index : index + k]
+        neighbors = Neighbors(curr_kmer, d)
+        for kmer in [curr_kmer, *neighbors]:
             frequencies[kmer] += 1 
 
     for kmer in frequencies:
@@ -49,23 +50,23 @@ def FasterFrequentWordsWithMismatches(Genome, k, d):
 
 
 
-# print(FrequentWordsWithMismatches("ACGTTGCATGTCGCATGATGCATGAGAGCT", 4,1))
-# print(FasterFrequentWordsWithMismatches("ACGTTGCATGTCGCATGATGCATGAGAGCT", 4,1))
+print(FrequentWordsWithMismatches("ACGTTGCATGTCGCATGATGCATGAGAGCT", 4,1))
+print(FasterFrequentWordsWithMismatches("ACGTTGCATGTCGCATGATGCATGAGAGCT", 4,1))
 
 
-if __name__ == "__main__":
-    import subprocess
-    from outputter import outputter
-    from inputter import inputter
-    with open('../../Downloads/dataset_9_7.txt') as input_file:
-        args = [inputter(word) for line in input_file for word in line.split()]
+# if __name__ == "__main__":
+#     import subprocess
+#     from outputter import outputter
+#     from inputter import inputter
+#     with open('../../Downloads/dataset_9_7.txt') as input_file:
+#         args = [inputter(word) for line in input_file for word in line.split()]
 
-    # produce output here
-    output = FasterFrequentWordsWithMismatches(*args)
+#     # produce output here
+#     output = FasterFrequentWordsWithMismatches(*args)
 
-    with open('output.txt', "w") as output_file:
-        output_file.write(outputter(output))
+#     with open('output.txt', "w") as output_file:
+#         output_file.write(outputter(output))
 
-    # display in default GUI
-    subprocess.run(['open', 'output.txt'])
+#     # display in default GUI
+#     subprocess.run(['open', 'output.txt'])
 

@@ -3,6 +3,7 @@
 # Output: All integer(s) i minimizing Skew[i] among all values of i (from 0 to len(Genome)).
 from SkewArray import SkewArray
 
+
 def MinimumSkew(Genome):
     skew = SkewArray(Genome)
     minimum = min(skew)
@@ -11,10 +12,5 @@ def MinimumSkew(Genome):
         if skew[i] == minimum:
             min_positions.append(i)
     return min_positions
-
-
-with open('E_coli_genome.txt') as file:
-    e_coli = file.read()
-    print(MinimumSkew(e_coli))
 
 # => [3923620, 3923621, 3923622, 3923623]

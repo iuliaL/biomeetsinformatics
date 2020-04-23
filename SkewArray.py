@@ -25,7 +25,7 @@ def SkewArray(Genome):
 # Test
 # skew = SkewArray('GAGCCACCGCGATA')
 # skew_dict = { i : skew[i] for i in range(len(skew))}
-print(" ".join([str(x) for x in SkewArray('GAGCCACCGCGATA')]))
+# print(" ".join([str(x) for x in SkewArray('GAGCCACCGCGATA')]))
 
 
 # if __name__ == "__main__":
