@@ -14,7 +14,7 @@ def FrequentWordsWithMismatchesAndReverseComplements(Genome, k, d):
     for index in range(len(Genome) - k + 1):
         curr_kmer = Genome[index : index + k]
         neighbors = Neighbors(curr_kmer, d)
-        for kmer in [curr_kmer, *neighbors]:
+        for kmer in neighbors:
             frequencies[kmer] += 1
             frequencies[ReverseComplement(kmer)] += 1
 
