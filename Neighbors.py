@@ -1,5 +1,6 @@
 import itertools
-
+import collections
+from HammingDistance import HammingDistance
 
 def ImmediateNeighbors(pattern):
     """
@@ -16,12 +17,36 @@ def ImmediateNeighbors(pattern):
                 immediate_neighbors.add(neighbor)
     return immediate_neighbors
 
-
-# print(ImmediateNeighbors("TGCA"))
-
-def Neighbors(motif, d):  # where d is hamming distance
-    workingSet = {motif}
+def Neighbors(pattern, d):
+    neighbors =  set()
+    neighbors.add(pattern) # initialize neighbors with pattern
     for _ in range(d):
-        workingSet = set(itertools.chain.from_iterable(map(ImmediateNeighbors, workingSet)))
-    return list(workingSet)
+        for n in neighbors:
+            neighbors = neighbors | ImmediateNeighbors(n) # (set union)
+    return list(neighbors)
+
+# HORRIBLE
+def RecursiveNeighbors(pattern, d):
+    k = len(pattern)
+    nucleotides = ["A", "C", "G", "T"]
+    if d == 0:
+        return { pattern }
+    if k == 1 :
+        return set(nucleotides)
+
+    neighbors = set()
+    suffix = pattern[1:]
+    first_symbol = pattern[0]
+    suffix_neighbors = Neighbors(suffix, d)
+    for s_neighbor in suffix_neighbors:
+        distance = HammingDistance(suffix, s_neighbor)
+        if distance < d:
+            for n in nucleotides:
+                neighbor = n + s_neighbor
+                neighbors.add(neighbor)
+        else:
+            neighbor = first_symbol + s_neighbor
+            neighbors.add(neighbor)
+    return list(neighbors)
+
 
