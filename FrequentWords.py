@@ -3,9 +3,10 @@ from collections import defaultdict
 
 # k is the length of a k-mer(Pattern)
 
+
 def FrequencyMap(Text, k):
     frequency = defaultdict(lambda: 0)
-    for index in range(len(Text) - k + 1): # exp: "ATCCGA" in 6 length text i have 4 3-length kmers 6 - 3 + 1 = 4; range 0 -> 4 means 4 times
+    for index in range(len(Text) - k + 1):  # exp: "ATCCGA" in 6 length text i have 4 3-length kmers 6 - 3 + 1 = 4; range 0 -> 4 means 4 times
         Pattern = Text[index: index + k]
         frequency[Pattern] += 1
     return frequency
@@ -28,7 +29,8 @@ def FrequentWords(Text, k):
     # print("Elapsed time:", end - start)
     return most_frequent_patterns
 
-print(FrequentWords("CGGAGGACTCTAGGTAACGCTTATCAGGTCCATAGGACATTCA", 3))
+# print(FrequentWords("CGGAGGACTCTAGGTAACGCTTATCAGGTCCATAGGACATTCA", 3))
+
 
 def getFrequent(frequencies, threshold):
     # filter only the results appearing more often than threshold

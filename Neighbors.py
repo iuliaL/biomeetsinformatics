@@ -1,5 +1,3 @@
-import itertools
-import collections
 from HammingDistance import HammingDistance
 
 def ImmediateNeighbors(pattern):
@@ -37,7 +35,7 @@ def RecursiveNeighbors(pattern, d):
     neighbors = set()
     suffix = pattern[1:]
     first_symbol = pattern[0]
-    suffix_neighbors = Neighbors(suffix, d)
+    suffix_neighbors = RecursiveNeighbors(suffix, d)
     for s_neighbor in suffix_neighbors:
         distance = HammingDistance(suffix, s_neighbor)
         if distance < d:

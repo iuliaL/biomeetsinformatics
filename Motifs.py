@@ -1,6 +1,55 @@
 from HammingDistance import HammingDistance
 from random import randint, uniform, random
-from Frequency import FrequencyMap
+from FrequentWords import FrequencyMap
+from Neighbors import Neighbors
+from AproximatePatternCount import ApproximatePatternCount
+
+# This function should return a list of strings.
+def MotifEnumeration(k, d, *dna):
+    '''
+        Patterns ← an empty set
+        for each k-mer Pattern in the first string in Dna
+            for each k-mer Pattern’ differing from Pattern by at most d mismatches
+                if Pattern' appears in each string from Dna with at most d mismatches
+                    add Pattern' to Patterns
+        remove duplicates from Patterns
+        return Patterns
+    '''
+    motifs = set()
+    for i in range(len(dna[0]) - k + 1):
+        kmer = dna[0][i: i + k]
+        neighbors = Neighbors(kmer, d)
+        for neighbor in neighbors:
+            present = True
+            index = 0
+            while present and index < len(dna):
+                string = dna[index]
+                count = ApproximatePatternCount(neighbor, string, d)
+                if count == 0:
+                    present = False
+                index +=  1
+            if present:
+                motifs.add(neighbor)
+    return list(motifs)
+
+# ??
+# def FasterMotifEnumeration(k, d, *dna):
+#     '''
+#         for each k-mer Pattern in the strings of Dna
+#         compute neighbors
+#         and check intersections
+#         return Patterns
+#     '''
+#     motif_sets = [set()] * len(dna)
+#     for index, string in enumerate(dna):
+#         for i in range(len(string) - k + 1):
+#             kmer = string[i: i + k]
+#             neighbors = Neighbors(kmer, d)
+#             motif_sets[index].update(neighbors)
+#     motif_sets =motif_sets
+#     motifs =  set.intersection(*motif_sets)
+#     return list(motifs)
+# ??
 
 
 def Count(Motifs):
@@ -319,3 +368,22 @@ N_ = 20  # times
 #     if Score(BestMotifs) > Score(motifs):
 #         BestMotifs = motifs
 #     i_ += 1
+
+
+
+if __name__ == "__main__":
+    import subprocess
+    from outputter import outputter
+    from inputter import inputter
+    with open('../../Downloads/dataset_156_8 (3).txt') as input_file:
+        args = [inputter(word) for line in input_file for word in line.split()]
+
+    # produce output here
+
+    output = MotifEnumeration(*args)
+
+    with open('output.txt', "w") as output_file:
+        output_file.write(outputter(output))
+
+    # display in default GUI
+    subprocess.run(['open', 'output.txt'])
