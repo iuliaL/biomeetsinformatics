@@ -374,13 +374,18 @@ def GibbsSampler(Dna, k, t, N):
 if __name__ == "__main__":
     import subprocess
     from file_io import outputter, inputter
-    with open('../../Downloads/dataset_159_3 (7).txt') as input_file:
-        args = [inputter.inputter(line) for line in input_file]
-        index_for_profile = 2
-        profile = {key: list(map(float, args[num + index_for_profile].split(' '))) for (num,key) in enumerate('ACGT') }
+    with open('../../Downloads/dataset_160_9.txt') as input_file:
+        args = [inputter.inputter(word) for line in input_file for word in line.split()]
+
+        # args = [inputter.inputter(line) for line in input_file] # by line
+
+        # index_for_profile = 2
+        # profile = {key: list(map(float, args[num + index_for_profile].split(' '))) for (num,key) in enumerate('ACGT') }
 
     # produce output here
-    output = ProfileMostProbableKmer(args[0].split('\n')[0], args[1], profile)
+    # output = ProfileMostProbableKmer(args[0].split('\n')[0], args[1], profile)
+    # print(args)
+    output = GreedyMotifSearch(*args)
     print(output)
 
 
