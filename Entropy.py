@@ -4,6 +4,8 @@
 
 # -(0.2 \log_{2}{0.2} + 0.6\log_{2}{0.6} + 0.0\log_{2}{0.0} + 0.2\log_{2}{0.2}) \approx 1.371
 from math import log2
+from Motifs import Profile
+from flatten_list import flatten
 
 def Entropy(*probabilities):
     entropy = 0
@@ -19,6 +21,22 @@ c=[0.1,0.6,0.4,0.1,0.2,0.4,0.6]
 g=[1,1,0.9,0.9,0.1]
 t=[0.7,0.2,0.1,0.1,0.5,0.8,0.7,0.3,0.4]
 
+Motifs = [
+"TCGGGGGTTTTT",
+"CCGGTGACTTAC",
+"ACGGGGATTTTC",
+"TTGGGGACTTTT",
+"AAGGGGACTTCC",
+"TTGGGGACTTCC",
+"TCGGGGATTCAT",
+"TCGGGGATTCCT",
+"TAGGGGAACTAC",
+"TCGGGTATAACC"
+]
+
+# probabilities = flatten(Profile(Motifs).values())
+# print(Entropy(*probabilities))
+
  # collective entropy
-print(Entropy(*a,*c,*g,*t))
+# print(Entropy(*a,*c,*g,*t))
         

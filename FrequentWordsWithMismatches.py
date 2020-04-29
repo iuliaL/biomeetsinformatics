@@ -2,6 +2,8 @@
 
 from AproximatePatternCount import ApproximatePatternCount
 from Neighbors import Neighbors
+from Combinations import Combinations
+
 import itertools
 import time
 from collections import defaultdict
@@ -18,7 +20,7 @@ def FrequentWordsWithMismatches(Genome, k, d):
     aprox_frq_words = []
     frequencies = {}
     # all existent combinations of k-length kmers 4**k
-    combinations = ["".join(comb) for comb in list(itertools.product('ACGT', repeat=k))]
+    combinations = Combinations(k)
     for kmer in combinations:
         count = ApproximatePatternCount(kmer, Genome, d)
         frequencies[kmer] = count
