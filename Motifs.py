@@ -145,14 +145,14 @@ def Pr(Pattern, Profile):
     return pr
 
 
-# profile = {
-#     'A': [0.2, 0.2, 0.0, 0.0, 0.0, 0.0, 0.9, 0.1, 0.1, 0.1, 0.3, 0.0],
-#     'C': [0.1, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.1, 0.2, 0.4, 0.6],
-#     'G': [0.0, 0.0, 1.0, 1.0, 0.9, 0.9, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],
-#     'T': [0.7, 0.2, 0.0, 0.0, 0.1, 0.1, 0.0, 0.5, 0.8, 0.7, 0.3, 0.4]
-# }
+profile = {
+    'A': [0.2, 0.2, 0.0, 0.0, 0.0, 0.0, 0.9, 0.1, 0.1, 0.1, 0.3, 0.0],
+    'C': [0.1, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4, 0.1, 0.2, 0.4, 0.6],
+    'G': [0.0, 0.0, 1.0, 1.0, 0.9, 0.9, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],
+    'T': [0.7, 0.2, 0.0, 0.0, 0.1, 0.1, 0.0, 0.5, 0.8, 0.7, 0.3, 0.4]
+}
 
-# print("Probability", Pr("TCGTGGATTTCC", profile))
+print("Probability", Pr("TCGTGGATTTCC", profile))
 
 
 def ProfileMostProbableKmer(text, k, profile):  # but here i could get more than 1, i ignore ties
@@ -369,21 +369,3 @@ N_ = 20  # times
 #         BestMotifs = motifs
 #     i_ += 1
 
-
-
-if __name__ == "__main__":
-    import subprocess
-    from outputter import outputter
-    from inputter import inputter
-    with open('../../Downloads/dataset_156_8 (3).txt') as input_file:
-        args = [inputter(word) for line in input_file for word in line.split()]
-
-    # produce output here
-
-    output = MotifEnumeration(*args)
-
-    with open('output.txt', "w") as output_file:
-        output_file.write(outputter(output))
-
-    # display in default GUI
-    subprocess.run(['open', 'output.txt'])

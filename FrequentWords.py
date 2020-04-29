@@ -40,19 +40,3 @@ def getFrequent(frequencies, threshold):
             frequent.append(key)
     return frequent
 
-
-# if __name__ == "__main__":
-
-#     vibrio_cholerae_oriC_file = open(r"oriC/vibrio_cholerae_oriC.txt")
-#     vibrio_cholerae_oriC = vibrio_cholerae_oriC_file.read()
-#     vibrio_cholerae_oriC_file.close()
-
-
-#     # print(FrequentWords(vibrio_cholerae_oriC, 9)) # => ['ATGATCAAG', 'CTCTTGATC', 'TCTTGATCA', 'CTTGATCAT']
-#     """ Note the first 2 are complementary strands """
-
-
-#     t_petrophila_oriC_file = open(r"oriC/t_petrophila_oriC.txt")
-#     t_petrophila_oriC = t_petrophila_oriC_file.read()
-#     t_petrophila_oriC_file.close()
-#     print(FrequentWords(t_petrophila_oriC, 9))

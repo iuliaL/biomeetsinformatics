@@ -26,22 +26,7 @@ def FrequentWordsWithMismatchesAndReverseComplements(Genome, k, d):
     return aprox_frq_words
 
 
-print(FrequentWordsWithMismatchesAndReverseComplements("ACGTTGCATGTCGCATGATGCATGAGAGCT", 4, 1))
+# print(FrequentWordsWithMismatchesAndReverseComplements("ACGTTGCATGTCGCATGATGCATGAGAGCT", 4, 1))
 
-# if __name__ == "__main__":
-#     import subprocess
-#     from outputter import outputter
-#     from inputter import inputter
-#     with open('../../Downloads/dataset_9_8.txt') as input_file:
-#         args = [inputter(word) for line in input_file for word in line.split()]
-
-#     # produce output here
-#     output = FasterFrequentWordsWithMismatchesAndReverseComplements(*args)
-
-#     with open('output.txt', "w") as output_file:
-#         output_file.write(outputter(output))
-
-#     # display in default GUI
-#     subprocess.run(['open', 'output.txt'])
 
 
