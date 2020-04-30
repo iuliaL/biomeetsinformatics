@@ -294,9 +294,9 @@ def Normalize(Probabilities):
     return new_probabilities
 
 
-# print(Normalize({'A': 0.1, 'C': 0.1, 'G': 0.1, 'T': 0.1}))
+# print(Normalize({'AC': 0.1, 'CG': 0.1, 'TG': 0.1, 'TT': 0.1}))
 
-def WeightedDie(Probabilities):
+def WeightedDie(Probabilities): # returns one kmer from the probabilities dict
     n = uniform(0, 1)
     for p in Probabilities:
         n -= Probabilities[p]
@@ -306,7 +306,7 @@ def WeightedDie(Probabilities):
 # print(WeightedDie({'AA': 0.3, 'AC': 0.2, 'TT': 0.45, 'CG': 0.05}))
 
 
-def ProfileGeneratedString(Text, profile, k):
+def ProfileRandomlyGeneratedString(Text, profile, k):
     # Differs from ProfileMostProbableKmer because it is not necessarily picking the most probable kmer
     # (it has a degree of randomness given by the biased WeightDie, it is biased to the implanted motif) although there is a big chance to pick it.
     # This is intentional! It avoids finding a local motif that only looks like being the implanted one
@@ -320,7 +320,7 @@ def ProfileGeneratedString(Text, profile, k):
 # print(ProfileGeneratedString('AAACCCAAACCC', {'A': [0.5, 0.1], 'C': [0.3, 0.2], 'G': [0.2, 0.4], 'T': [0.0, 0.3]}, 2))
 
 
-def GibbsSampler(Dna, k, t, N):
+def GibbsSampler(k, t, N, Dna):
     # first, randomly select a k-mer motif from each string in Dna
     BestMotifs = RandomMotifs(Dna, k, t)
     # start loop
@@ -331,7 +331,7 @@ def GibbsSampler(Dna, k, t, N):
         # then create a profile on the remaining ones
         profile_of_rest = ProfileWithPseudocounts(BestMotifs[:i] + BestMotifs[i + 1:])
         # then extract a motif back from the deleted string plus the profile by using WeightDie randomness
-        new_motif = ProfileGeneratedString(deleted_string, profile_of_rest, k)
+        new_motif = ProfileRandomlyGeneratedString(deleted_string, profile_of_rest, k)
         # recreate the motifs list with the new motif in (the same) place
         renewed_motifs = BestMotifs[:i] + [new_motif] + BestMotifs[i + 1:]
         if Score(BestMotifs) > Score(renewed_motifs):
@@ -342,40 +342,14 @@ def GibbsSampler(Dna, k, t, N):
     return BestMotifs
 
 
-# Dna = ["GCGCCCCGCCCGGACAGCCATGCGCTAACCCTGGCTTCGATGGCGCCGGCTCAGTTAGGGCCGGAAGTCCCCAATGTGGCAGACCTTTCGCCCCTGGCGGACGAATGACCCCAGTGGCCGGGACTTCAGGCCCTATCGGAGGGCTCCGGCGCGGTGGTCGGATTTGTCTGTGGAGGTTACACCCCAATCGCAAGGATGCATTATGACCAGCGAGCTGAGCCTGGTCGCCACTGGAAAGGGGAGCAACATC",
-#        "CCGATCGGCATCACTATCGGTCCTGCGGCCGCCCATAGCGCTATATCCGGCTGGTGAAATCAATTGACAACCTTCGACTTTGAGGTGGCCTACGGCGAGGACAAGCCAGGCAAGCCAGCTGCCTCAACGCGCGCCAGTACGGGTCCATCGACCCGCGGCCCACGGGTCAAACGACCCTAGTGTTCGCTACGACGTGGTCGTACCTTCGGCAGCAGATCAGCAATAGCACCCCGACTCGAGGAGGATCCCG",
-#        "ACCGTCGATGTGCCCGGTCGCGCCGCGTCCACCTCGGTCATCGACCCCACGATGAGGACGCCATCGGCCGCGACCAAGCCCCGTGAAACTCTGACGGCGTGCTGGCCGGGCTGCGGCACCTGATCACCTTAGGGCACTTGGGCCACCACAACGGGCCGCCGGTCTCGACAGTGGCCACCACCACACAGGTGACTTCCGGCGGGACGTAAGTCCCTAACGCGTCGTTCCGCACGCGGTTAGCTTTGCTGCC",
-#        "GGGTCAGGTATATTTATCGCACACTTGGGCACATGACACACAAGCGCCAGAATCCCGGACCGAACCGAGCACCGTGGGTGGGCAGCCTCCATACAGCGATGACCTGATCGATCATCGGCCAGGGCGCCGGGCTTCCAACCGTGGCCGTCTCAGTACCCAGCCTCATTGACCCTTCGACGCATCCACTGCGCGTAAGTCGGCTCAACCCTTTCAAACCGCTGGATTACCGACCGCAGAAAGGGGGCAGGAC",
-#        "GTAGGTCAAACCGGGTGTACATACCCGCTCAATCGCCCAGCACTTCGGGCAGATCACCGGGTTTCCCCGGTATCACCAATACTGCCACCAAACACAGCAGGCGGGAAGGGGCGAAAGTCCCTTATCCGACAATAAAACTTCGCTTGTTCGACGCCCGGTTCACCCGATATGCACGGCGCCCAGCCATTCGTGACCGACGTCCCCAGCCCCAAGGCCGAACGACCCTAGGAGCCACGAGCAATTCACAGCG",
-#        "CCGCTGGCGACGCTGTTCGCCGGCAGCGTGCGTGACGACTTCGAGCTGCCCGACTACACCTGGTGACCACCGCCGACGGGCACCTCTCCGCCAGGTAGGCACGGTTTGTCGCCGGCAATGTGACCTTTGGGCGCGGTCTTGAGGACCTTCGGCCCCACCCACGAGGCCGCCGCCGGCCGATCGTATGACGTGCAATGTACGCCATAGGGTGCGTGTTACGGCGATTACCTGAAGGCGGCGGTGGTCCGGA",
-#        "GGCCAACTGCACCGCGCTCTTGATGACATCGGTGGTCACCATGGTGTCCGGCATGATCAACCTCCGCTGTTCGATATCACCCCGATCTTTCTGAACGGCGGTTGGCAGACAACAGGGTCAATGGTCCCCAAGTGGATCACCGACGGGCGCGGACAAATGGCCCGCGCTTCGGGGACTTCTGTCCCTAGCCCTGGCCACGATGGGCTGGTCGGATCAAAGGCATCCGTTTCCATCGATTAGGAGGCATCAA",
-#        "GTACATGTCCAGAGCGAGCCTCAGCTTCTGCGCAGCGACGGAAACTGCCACACTCAAAGCCTACTGGGCGCACGTGTGGCAACGAGTCGATCCACACGAAATGCCGCCGTTGGGCCGCGGACTAGCCGAATTTTCCGGGTGGTGACACAGCCCACATTTGGCATGGGACTTTCGGCCCTGTCCGCGTCCGTGTCGGCCAGACAAGCTTTGGGCATTGGCCACAATCGGGCCACAATCGAAAGCCGAGCAG",
-#        "GGCAGCTGTCGGCAACTGTAAGCCATTTCTGGGACTTTGCTGTGAAAAGCTGGGCGATGGTTGTGGACCTGGACGAGCCACCCGTGCGATAGGTGAGATTCATTCTCGCCCTGACGGGTTGCGTCTGTCATCGGTCGATAAGGACTAACGGCCCTCAGGTGGGGACCAACGCCCCTGGGAGATAGCGGTCCCCGCCAGTAACGTACCGCTGAACCGACGGGATGTATCCGCCCCAGCGAAGGAGACGGCG",
-#        "TCAGCACCATGACCGCCTGGCCACCAATCGCCCGTAACAAGCGGGACGTCCGCGACGACGCGTGCGCTAGCGCCGTGGCGGTGACAACGACCAGATATGGTCCGAGCACGCGGGCGAACCTCGTGTTCTGGCCTCGGCCAGTTGTGTAGAGCTCATCGCTGTCATCGAGCGATATCCGACCACTGATCCAAGTCGGGGGCTCTGGGGACCGAAGTCCCCGGGCTCGGAGCTATCGGACCTCACGATCACC"]
-# Dna = ["CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA","GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG","TAGTACCGAGACCGAAAGAAGTATACAGGCGT","TAGATCAAGTTTCAGGTGCACGTCGGTGAACC","AATCCACCAGCTCCACGTGCAATGTTGGCCTA"]
-
-# i_ = 0
-# N_ = 20  # times
-
-
-# BestMotifs = GibbsSampler(Dna, 15, len(Dna), 100)
-
-# while i_ < N_:
-#     motifs = GibbsSampler(Dna, 15, len(Dna), 100)
-#     # print(Score(BestMotifs), Score(motifs))
-#     if Score(BestMotifs) > Score(motifs):
-#         BestMotifs = motifs
-#     i_ += 1
-
 
 
 
 if __name__ == "__main__":
     import subprocess
     from file_io import outputter, inputter
-    with open('../../Downloads/dataset_161_5 (2).txt') as input_file:
+    with open('../../Downloads/dataset_163_4 (2).txt') as input_file:
         args = [inputter.inputter(word) for line in input_file for word in line.split()]
-
         # args = [inputter.inputter(line) for line in input_file] # by line
 
         # index_for_profile = 2
@@ -383,16 +357,15 @@ if __name__ == "__main__":
 
     # produce output here
     # output = ProfileMostProbableKmer(args[0].split('\n')[0], args[1], profile)
-    # print(args)
     i = 0
-    BestMotifs = RandomizedMotifSearch(*args)
-    while i < 1000:
-        motifs = RandomizedMotifSearch(*args)
+    BestMotifs = GibbsSampler(*args)
+    while i < 20:
+        motifs = GibbsSampler(*args)
         if Score(BestMotifs) > Score(motifs):
             BestMotifs = motifs
         i += 1
     output = BestMotifs
-    print(Score(output))
+
     print(outputter.outputter(output))
 
 
