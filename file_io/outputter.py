@@ -1,6 +1,6 @@
 def outputter(output):
     if  isinstance(output, list):
-        return " ".join([
+        return "\n".join([
             str(x) for x in output
         ])
     else:

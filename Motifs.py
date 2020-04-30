@@ -221,10 +221,9 @@ def Motifs(Profile, k, Dna):
 def RandomMotifs(Dna, k, t):  # just pick 1 random k mer from each DNA string
     random_motifs = []
     for s in Dna:
-        start_pos = randint(0, len(Dna) - 1)
+        start_pos = randint(0, len(s) - k)
         random_motifs.append(s[start_pos: start_pos + k])
     return random_motifs
-
 
 def RandomizedMotifSearch(Dna, k, t):
     BestMotifs = RandomMotifs(Dna, k, t)
@@ -374,7 +373,7 @@ def GibbsSampler(Dna, k, t, N):
 if __name__ == "__main__":
     import subprocess
     from file_io import outputter, inputter
-    with open('../../Downloads/dataset_160_9.txt') as input_file:
+    with open('../../Downloads/dataset_161_5 (2).txt') as input_file:
         args = [inputter.inputter(word) for line in input_file for word in line.split()]
 
         # args = [inputter.inputter(line) for line in input_file] # by line
@@ -385,8 +384,16 @@ if __name__ == "__main__":
     # produce output here
     # output = ProfileMostProbableKmer(args[0].split('\n')[0], args[1], profile)
     # print(args)
-    output = GreedyMotifSearch(*args)
-    print(output)
+    i = 0
+    BestMotifs = RandomizedMotifSearch(*args)
+    while i < 1000:
+        motifs = RandomizedMotifSearch(*args)
+        if Score(BestMotifs) > Score(motifs):
+            BestMotifs = motifs
+        i += 1
+    output = BestMotifs
+    print(Score(output))
+    print(outputter.outputter(output))
 
 
 
